@@ -1,0 +1,14 @@
+server:
+  port: 7100
+
+# 默认关闭spring doc
+springdoc:
+  swagger-ui:
+    enabled: false
+  api-docs:
+    enabled: false
+
+captcha:
+  verify:
+    strict: true # 是否需要验证ip
+
