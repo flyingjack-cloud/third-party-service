@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: third-party-service
+spec:
+  selector:
+    app: third-party-service
+  ports:
+    - protocol: TCP
+      name: http-web
+      port: 80
+      targetPort: api
+    - protocol: TCP
+      name: http-monitor
+      port: 8081
+      targetPort: actuator
+  type: ClusterIP

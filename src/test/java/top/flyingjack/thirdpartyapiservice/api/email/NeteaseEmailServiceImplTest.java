@@ -1,9 +1,6 @@
 package top.flyingjack.thirdpartyapiservice.api.email;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.io.ClassPathResource;
@@ -15,10 +12,12 @@ import java.util.Properties;
 
 /**
  * 网易邮箱发送测试 - 会真实发送
+ * 默认关闭了，需要请删除@Disabled
  *
  * @author Zumin Li
  * @date 2025/4/17 23:22
  */
+@Disabled
 class NeteaseEmailServiceImplTest {
     private static Properties properties;
 

@@ -1,0 +1,34 @@
+namespace: beta # 手动指定为dev环境下方也需要修改
+
+resources:
+  - ../../base
+
+configMapGenerator:
+  - name: third-party-service-config
+    behavior: merge
+    literals:
+      - SPRING_PROFILES_ACTIVE=beta # 手动指定为beta环境，上方也需要修改
+    files:
+      - application-beta.yml
+
+secretGenerator:
+  - name: sms-access-secret
+    envs:
+      - sms.env.secret
+    options:
+      labels:
+        secret.group: third-party-access # spring-cloud 通过这个自定义label寻找secret
+  - name: email-access-secret
+    envs:
+      - email.env.secret
+    options:
+      labels:
+        secret.group: third-party-access
+  - name: redis-access-secret
+    envs:
+      - redis.env.secret
+    options:
+      labels:
+        secret.group: cache-access-secret
+patches:
+  - path: deployment-patch.yaml

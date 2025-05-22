@@ -11,4 +11,3 @@ springdoc:
 captcha:
   verify:
     strict: true # 是否需要验证ip
-

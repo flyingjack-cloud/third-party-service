@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: third-party-service-v1
+  labels:
+    app: third-party-service
+    version: v1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: third-party-service
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: third-party-service
+        version: v1
+    spec:
+      serviceAccountName: third-party-service-account
+      containers:
+        - name: third-party-service
+          image: registry.wms.com:8443/cloud/flyingjack-third-party-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+              name: api
+            - containerPort: 8081
+              protocol: TCP
+              name: actuator
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              valueFrom:
+                configMapKeyRef:
+                  name: third-party-service-config
+                  key: SPRING_PROFILES_ACTIVE # 从config中获取激活的profiles注入到env
+      restartPolicy: Always
