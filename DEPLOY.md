@@ -107,32 +107,9 @@ kubectl get secret redis-access-secret -n flyingjack-prod -o jsonpath='{.data}' 
 
 ---
 
-## 手动申请 TLS 证书（首次部署时执行）
+## 前置：确认 api.flyingjack.top HTTPS 已就绪
 
-cert-manager Certificate 资源不走 ArgoCD 管理，需手动在 `istio-system` 命名空间申请一次，之后 cert-manager 自动续签。
-
-> **关于 HTTP→HTTPS 重定向**：Gateway 未配置 `httpsRedirect`，这是有意为之。cert-manager 使用 HTTP-01 方式验证域名，若开启重定向会导致每次续签时 ACME challenge 被 301 拦截，形成死锁。
-
-```bash
-kubectl apply -f - <<EOF
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: api-flyingjack-top-tls
-  namespace: istio-system
-spec:
-  secretName: internal-tls
-  issuerRef:
-    name: letsencrypt-prod
-    kind: ClusterIssuer
-  dnsNames:
-    - api.flyingjack.top
-EOF
-
-kubectl get certificate api-flyingjack-top-tls -n istio-system -w
-```
-
-> `internal-tls` 为 `networking.yaml` 中 Gateway `credentialName` 的值，若 auth-service 等其他服务已创建同名证书，此步骤可跳过。
+本服务通过共享 Gateway 暴露在 `https://api.flyingjack.top`，TLS 证书由 `shared-networking` 统一管理。**首次在新集群部署前，需确认 `shared-networking` 已部署且证书已签发**，步骤见 `k8s-gitops/shared-networking/DEPLOY.md`。
 
 ---
 
