@@ -1,13 +1,69 @@
 server:
   port: 7100
 
-# 默认关闭spring doc
+spring:
+  application:
+    name: third-party-service
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    serialization:
+      write-dates-as-timestamps: false
+    time-zone: UTC
+  messages:
+    basename: i18n/message
+    encoding: utf-8
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: 6379
+      password: ${REDIS_PASSWORD:}
+      database: 0
+      timeout: 5000
+  mail:
+    host: smtp.163.com
+    username: ${EMAIL_USERNAME:}
+    password: ${EMAIL_PASSWORD:}
+    default-from: ${EMAIL_USERNAME:}
+    default-encoding: UTF-8
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+aliyun:
+  sms:
+    access:
+      id: ${SMS_ACCESS_ID:}
+      secret: ${SMS_ACCESS_SECRET:}
+
+captcha:
+  sms:
+    sign-name: Flyingjack小站
+    template-code: SMS_465985630
+  verify:
+    strict: true
+
+management:
+  server:
+    port: 8081
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus
+  metrics:
+    tags:
+      application: ${spring.application.name}
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+        step: 1m
+
 springdoc:
   swagger-ui:
     enabled: false
   api-docs:
     enabled: false
-
-captcha:
-  verify:
-    strict: true # 是否需要验证ip

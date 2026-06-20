@@ -32,6 +32,15 @@ spec:
             prefix: "/third"
       rewrite:
         uri: " "
+      corsPolicy:
+        allowOrigins:
+          - regex: "https://.*\\.flyingjack\\.top"
+        allowMethods:
+          - GET
+          - POST
+        allowHeaders:
+          - Content-Type
+        maxAge: "24h"
       route:
         - destination:
             host: third-party-service # 匹配svc
@@ -41,7 +50,7 @@ spec:
           headers:
             request:
               add:
-                X-Forwarded-Prefix: "/third" #
+                X-Forwarded-Prefix: "/third"
 ---
 apiVersion: networking.istio.io/v1
 kind: DestinationRule
