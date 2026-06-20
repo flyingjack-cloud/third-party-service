@@ -1,0 +1,20 @@
+server:
+  port: 8080
+  forward-headers-strategy: framework
+
+spring:
+  data:
+    redis:
+      host: beta.flyingcloud.com
+
+springdoc:
+  swagger-ui:
+    enabled: true
+  api-docs:
+    enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
