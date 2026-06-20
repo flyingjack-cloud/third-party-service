@@ -39,6 +39,7 @@ kubectl create secret generic email-access-secret \
 
 # Redis 凭据
 kubectl create secret generic redis-access-secret \
+  --from-literal=REDIS_HOST=<Redis 地址> \
   --from-literal=REDIS_PASSWORD=<Redis 密码，无密码则留空字符串> \
   -n flyingjack-beta \
   --dry-run=client -o yaml | kubectl apply -f -
@@ -62,6 +63,7 @@ kubectl create secret generic email-access-secret \
   --dry-run=client -o yaml | kubectl apply -f -
 
 kubectl create secret generic redis-access-secret \
+  --from-literal=REDIS_HOST=<Redis 地址> \
   --from-literal=REDIS_PASSWORD=<Redis 密码> \
   -n flyingjack-prod \
   --dry-run=client -o yaml | kubectl apply -f -
