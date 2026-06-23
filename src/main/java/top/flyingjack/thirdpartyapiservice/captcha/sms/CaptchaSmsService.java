@@ -60,9 +60,10 @@ public class CaptchaSmsService {
                 templateCode);
 
         if (isSuccess) {
-            this.cacheService.hSet(CaptchaUtil.idToCacheKey(phone), CaptchaImageService.CAPTCHA_KEY, code);
-            this.cacheService.hSet(CaptchaUtil.idToCacheKey(phone), CaptchaImageService.IP_KEY, remoteIp);
-            this.cacheService.expire(CaptchaUtil.idToCacheKey(phone), 300L); // 有效期5分钟
+            String cacheKey = CaptchaUtil.idToCacheKey(phone);
+            this.cacheService.hSetVerified(cacheKey, CaptchaImageService.CAPTCHA_KEY, code);
+            this.cacheService.hSetVerified(cacheKey, CaptchaImageService.IP_KEY, remoteIp);
+            this.cacheService.expire(cacheKey, 300L); // 有效期5分钟
             return true;
         } else {
             log.warn("Sms captcha send failed - to {} from {}", phone, remoteIp);
