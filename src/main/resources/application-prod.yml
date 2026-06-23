@@ -8,6 +8,9 @@ spring:
       discovery:
         enabled: true
         discovery-server-url: https://kubernetes.default.svc.cluster.local:443
+      client:
+        # 自动读取pod内serviceaccount的ca证书，绕过JDK信任库问题
+        trust-certs: true
   data:
     redis:
       host: ${REDIS_HOST}
