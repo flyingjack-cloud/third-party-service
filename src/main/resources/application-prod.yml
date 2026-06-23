@@ -3,6 +3,11 @@ server:
   forward-headers-strategy: framework
 
 spring:
+  cloud:
+    kubernetes:
+      discovery:
+        enabled: true
+        discovery-server-url: https://kubernetes.default.svc.cluster.local:443
   data:
     redis:
       host: ${REDIS_HOST}
