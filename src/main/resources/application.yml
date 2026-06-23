@@ -41,10 +41,11 @@ aliyun:
 
 captcha:
   sms:
-    sign-name: Flyingjack小站
-    template-code: SMS_465985630
+    # 危险，请勿泄露
+    sign-name: ${SMS_SIGN_NAME:}
+    template-code: ${SMS_TEMPLATE_CODE:}
   verify:
-    strict: true
+    strict: true # 是否需要验证ip
 
 management:
   server:
