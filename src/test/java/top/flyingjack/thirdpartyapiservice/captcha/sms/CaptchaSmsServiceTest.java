@@ -64,7 +64,7 @@ class CaptchaSmsServiceTest {
         Mockito.when(this.smsService.sendSms(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
                 Mockito.anyString())).thenReturn(true);
         assertTrue(this.captchaSmsService.sendSmsCaptcha("13012341234", "8.8.8.6"));
-        Mockito.verify(this.cacheService, Mockito.times(2)).hSet(Mockito.anyString(), Mockito.anyString(),
+        Mockito.verify(this.cacheService, Mockito.times(2)).hSetVerified(Mockito.anyString(), Mockito.anyString(),
                 Mockito.anyString());
         Mockito.verify(this.cacheService, Mockito.atLeastOnce()).expire(Mockito.anyString(), Mockito.anyLong());
 
