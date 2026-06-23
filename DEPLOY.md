@@ -39,6 +39,7 @@ kubectl create secret generic email-access-secret \
 
 # Redis 凭据
 kubectl create secret generic redis-access-secret \
+  --from-literal=REDIS_HOST=<Redis 地址> \
   --from-literal=REDIS_PASSWORD=<Redis 密码，无密码则留空字符串> \
   -n flyingjack-beta \
   --dry-run=client -o yaml | kubectl apply -f -
@@ -62,6 +63,7 @@ kubectl create secret generic email-access-secret \
   --dry-run=client -o yaml | kubectl apply -f -
 
 kubectl create secret generic redis-access-secret \
+  --from-literal=REDIS_HOST=<Redis 地址> \
   --from-literal=REDIS_PASSWORD=<Redis 密码> \
   -n flyingjack-prod \
   --dry-run=client -o yaml | kubectl apply -f -
@@ -115,6 +117,8 @@ kubectl get secret redis-access-secret -n flyingjack-prod -o jsonpath='{.data}' 
 
 ## ArgoCD Application 创建
 
+> **前置条件**：Namespace 须提前手动创建，见 `k8s-gitops/shared/DEPLOY.md`。ArgoCD Application 不负责创建 Namespace，防止 auto-prune 误删命名空间。
+
 在 ArgoCD 所在集群执行（或通过 ArgoCD UI 导入）：
 
 ```bash
@@ -137,8 +141,6 @@ spec:
     automated:
       prune: true
       selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
 EOF
 ```
 
