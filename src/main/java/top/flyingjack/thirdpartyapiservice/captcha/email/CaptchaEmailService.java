@@ -10,10 +10,12 @@ import org.thymeleaf.context.Context;
 import top.flyingjack.common.cache.CacheService;
 import top.flyingjack.common.error.ErrorCode;
 import top.flyingjack.common.error.exception.BusinessException;
+import top.flyingjack.common.error.exception.ServiceInternalException;
 import top.flyingjack.common.tool.MessageTool;
 import top.flyingjack.common.tool.Verify;
 import top.flyingjack.thirdpartyapiservice.api.email.EmailService;
 import top.flyingjack.thirdpartyapiservice.captcha.CaptchaUtil;
+import top.flyingjack.thirdpartyapiservice.captcha.image.CaptchaImageService;
 
 import java.util.Locale;
 
@@ -63,7 +65,18 @@ public class CaptchaEmailService {
         context.setVariable("code", code);
         String emailContent = this.templateEngine.process("email_code.html", context);
 
-        return this.emailService.sendMail(email, subject, emailContent);
+        boolean isSuccess = this.emailService.sendMail(email, subject, emailContent);
+
+        if (isSuccess) {
+            String cacheKey = CaptchaUtil.idToCacheKey(email);
+            this.cacheService.hSetVerified(cacheKey, CaptchaImageService.CAPTCHA_KEY, code);
+            this.cacheService.hSetVerified(cacheKey, CaptchaImageService.IP_KEY, remoteIp);
+            this.cacheService.expire(cacheKey, 300L);
+            return true;
+        } else {
+            log.warn("Email captcha send failed - to {} from {}", email, remoteIp);
+            throw new ServiceInternalException("Email captcha send failed");
+        }
     }
 
     // 防止刷接口，限制30秒才能发送一次

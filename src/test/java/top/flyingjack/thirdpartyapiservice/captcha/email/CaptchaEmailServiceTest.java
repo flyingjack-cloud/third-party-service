@@ -10,8 +10,12 @@ import top.flyingjack.common.error.exception.BusinessException;
 import top.flyingjack.common.error.exception.ThirdPartySystemException;
 import top.flyingjack.thirdpartyapiservice.api.email.EmailService;
 
+import top.flyingjack.thirdpartyapiservice.captcha.CaptchaUtil;
+import top.flyingjack.thirdpartyapiservice.captcha.image.CaptchaImageService;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
 
 /**
  * @author Zumin Li
@@ -62,11 +66,29 @@ class CaptchaEmailServiceTest {
     }
 
     @Test
-    public void should_send_email() {
+    public void should_send_email_and_store_code_in_cache() {
         String testIp = "8.8.8.4";
+        String testEmail = "test@test.com";
         Mockito.when(this.emailService.sendMail(Mockito.any(), Mockito.any(), Mockito.any()))
                 .thenReturn(true);
 
-        assertTrue(this.captchaEmailService.sendEmailCaptcha("test@test.com", testIp));
+        assertTrue(this.captchaEmailService.sendEmailCaptcha(testEmail, testIp));
+
+        String expectedKey = CaptchaUtil.idToCacheKey(testEmail);
+        Mockito.verify(this.cacheService).hSetVerified(eq(expectedKey), eq(CaptchaImageService.CAPTCHA_KEY), Mockito.any());
+        Mockito.verify(this.cacheService).hSetVerified(eq(expectedKey), eq(CaptchaImageService.IP_KEY), eq(testIp));
+        Mockito.verify(this.cacheService).expire(eq(expectedKey), eq(300L));
+    }
+
+    @Test
+    public void should_throw_when_email_send_fails() {
+        Mockito.when(this.emailService.sendMail(Mockito.any(), Mockito.any(), Mockito.any()))
+                .thenReturn(false);
+
+        assertThrows(top.flyingjack.common.error.exception.ServiceInternalException.class,
+                () -> this.captchaEmailService.sendEmailCaptcha("test@test.com", "8.8.8.5"));
+
+        Mockito.verify(this.cacheService, Mockito.never())
+                .hSetVerified(Mockito.any(), Mockito.any(), Mockito.any());
     }
 }
