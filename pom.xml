@@ -16,6 +16,13 @@
     <description>thirdparty-service</description>
     <packaging>jar</packaging>
 
+    <repositories>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/flyingjack-cloud/common-lib</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>top.flyingjack</groupId>

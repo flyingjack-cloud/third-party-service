@@ -57,27 +57,19 @@ jobs:
           path: third-party-service
           token: ${{ steps.app-token.outputs.token }}
 
-      # Step 5: 解析 common-lib checkout ref
-      # develop：跟随 common-lib 目标分支最新 HEAD（快速迭代，不做版本校验）
-      # main（含由 common-lib main 推送触发的 dispatch）：改为按 third-party-service
-      # 自己 pom.xml 里 pin 住的 common-lib 版本号，checkout 对应的 tag（v{version}）
-      - name: Resolve common-lib checkout ref
-        id: cl-ref
-        run: |
-          if [ "${{ steps.target.outputs.ref }}" = "main" ]; then
-            VERSION=$(grep -A1 '<artifactId>common-lib</artifactId>' third-party-service/pom.xml | tail -1 | sed -E 's/.*<version>(.*)<\/version>.*/\1/')
-            echo "ref=v${VERSION}" >> $GITHUB_OUTPUT
-          else
-            echo "ref=${{ steps.target.outputs.ref }}" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Checkout common-lib
+      # Step 5: checkout common-lib 源码（仅 develop）
+      # develop：跟随 common-lib develop 分支最新 HEAD，checkout 源码 + 本地 install 现装现用
+      # main：common-lib 已经在自己 main 分支的 CI 里 deploy 到 GitHub Packages 了，
+      # third-party-service 的 pom 里 pin 了具体版本号 + 配了 <repositories> 指向 Packages，
+      # 直接 mvn clean verify 时按版本号解析即可，不需要再 checkout 源码/本地 install
+      - name: Checkout common-lib (develop only)
+        if: steps.target.outputs.ref != 'main'
         uses: actions/checkout@v4
         with:
           repository: flyingjack-cloud/common-lib
           token: ${{ steps.app-token.outputs.token }}
           path: common-lib
-          ref: ${{ steps.cl-ref.outputs.ref }}
+          ref: ${{ steps.target.outputs.ref }}
 
       - name: Make mvnw executable
         run: chmod +x mvnw
@@ -92,10 +84,11 @@ jobs:
           fi
           echo "SHORT_SHA=${{ steps.target.outputs.short_sha }}" >> $GITHUB_ENV
 
-      # Step 7: 安装 common-lib 到本地 Maven 仓库
+      # Step 7: 安装 common-lib 到本地 Maven 仓库（仅 develop，main 直接从 Packages 解析）
       # -f 直接指向模块 pom.xml，Maven 只将根 pom 作为 parent 读取，
       # 不扫描 <modules> 列表，避免缺失的其他子模块导致报错
-      - name: Install common-lib
+      - name: Install common-lib (develop only)
+        if: steps.target.outputs.ref != 'main'
         run: ./mvnw install -f common-lib/pom.xml -DskipTests -Dspring-boot.repackage.skip=true -q
 
       # Step 8: 构建并测试 third-party-service
