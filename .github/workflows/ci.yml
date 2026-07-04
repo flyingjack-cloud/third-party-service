@@ -74,6 +74,24 @@ jobs:
       - name: Make mvnw executable
         run: chmod +x mvnw
 
+      # Step 5.5: 配置 Maven 访问 GitHub Packages 的凭证（main 分支解析 common-lib 需要）
+      # <repositories> 里用的是 <id>github</id>，settings.xml 要配同 id 的 <server> 凭证，
+      # 否则 main 分支直接从 Packages 拉 common-lib 时会 401
+      - name: Configure Maven credentials for GitHub Packages
+        run: |
+          mkdir -p ~/.m2
+          cat > ~/.m2/settings.xml <<EOF
+          <settings>
+            <servers>
+              <server>
+                <id>github</id>
+                <username>${{ github.actor }}</username>
+                <password>${{ steps.app-token.outputs.token }}</password>
+              </server>
+            </servers>
+          </settings>
+          EOF
+
       # Step 6: 从分支名推导 Maven profile
       - name: Set build variables
         run: |
