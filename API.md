@@ -17,7 +17,7 @@
   "code": 200,
   "message": "Success",
   "data": { ... },
-  "timestamp": 1714000000000
+  "timestamp": "2025-04-04T16:13:28Z"
 }
 ```
 
@@ -28,7 +28,7 @@
   "code": 429,
   "message": "Attempt to many",
   "path": "/captcha/generate/sms",
-  "timestamp": 1714000000000
+  "timestamp": "2025-04-04T16:13:28Z"
 }
 ```
 
@@ -70,7 +70,7 @@ GET /captcha/generate/image
     "uuid": "a3f1c2d4-5678-4abc-9def-000000000001",
     "base64Image": "iVBORw0KGgoAAAANSUhEUgAA..."
   },
-  "timestamp": 1714000000000
+  "timestamp": "2025-04-04T16:13:28Z"
 }
 ```
 
@@ -105,7 +105,7 @@ GET /captcha/generate/sms?phone={phone}
   "code": 200,
   "message": "Success",
   "data": true,
-  "timestamp": 1714000000000
+  "timestamp": "2025-04-04T16:13:28Z"
 }
 ```
 
@@ -153,7 +153,7 @@ GET /captcha/generate/mail?email={email}
   "code": 200,
   "message": "Success",
   "data": true,
-  "timestamp": 1714000000000
+  "timestamp": "2025-04-04T16:13:28Z"
 }
 ```
 
