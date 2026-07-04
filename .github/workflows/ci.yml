@@ -75,8 +75,9 @@ jobs:
         run: chmod +x mvnw
 
       # Step 5.5: 配置 Maven 访问 GitHub Packages 的凭证（main 分支解析 common-lib 需要）
-      # <repositories> 里用的是 <id>github</id>，settings.xml 要配同 id 的 <server> 凭证，
-      # 否则 main 分支直接从 Packages 拉 common-lib 时会 401
+      # 注意：GitHub App 安装 token 认证不了 GitHub Packages 的 Maven 注册表，
+      # 而且这里是跨仓库读取 common-lib 的包，内置 GITHUB_TOKEN 也不行（只对本仓库自己的包有效），
+      # 必须用 classic PAT（read:packages），存成 secrets.PACKAGES_TOKEN
       - name: Configure Maven credentials for GitHub Packages
         run: |
           mkdir -p ~/.m2
@@ -86,7 +87,7 @@ jobs:
               <server>
                 <id>github</id>
                 <username>${{ github.actor }}</username>
-                <password>${{ steps.app-token.outputs.token }}</password>
+                <password>${{ secrets.PACKAGES_TOKEN }}</password>
               </server>
             </servers>
           </settings>
