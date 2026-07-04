@@ -57,14 +57,27 @@ jobs:
           path: third-party-service
           token: ${{ steps.app-token.outputs.token }}
 
-      # Step 5: checkout common-lib，使用目标分支
-      - name: Checkout common-lib (latest)
+      # Step 5: 解析 common-lib checkout ref
+      # develop：跟随 common-lib 目标分支最新 HEAD（快速迭代，不做版本校验）
+      # main（含由 common-lib main 推送触发的 dispatch）：改为按 third-party-service
+      # 自己 pom.xml 里 pin 住的 common-lib 版本号，checkout 对应的 tag（v{version}）
+      - name: Resolve common-lib checkout ref
+        id: cl-ref
+        run: |
+          if [ "${{ steps.target.outputs.ref }}" = "main" ]; then
+            VERSION=$(grep -A1 '<artifactId>common-lib</artifactId>' third-party-service/pom.xml | tail -1 | sed -E 's/.*<version>(.*)<\/version>.*/\1/')
+            echo "ref=v${VERSION}" >> $GITHUB_OUTPUT
+          else
+            echo "ref=${{ steps.target.outputs.ref }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Checkout common-lib
         uses: actions/checkout@v4
         with:
           repository: flyingjack-cloud/common-lib
           token: ${{ steps.app-token.outputs.token }}
           path: common-lib
-          ref: ${{ steps.target.outputs.ref }}
+          ref: ${{ steps.cl-ref.outputs.ref }}
 
       - name: Make mvnw executable
         run: chmod +x mvnw

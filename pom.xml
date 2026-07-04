@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>thirdparty-service</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0-rc</version>
     <name>thirdparty-service</name>
     <description>thirdparty-service</description>
     <packaging>jar</packaging>
@@ -20,6 +20,7 @@
         <dependency>
             <groupId>top.flyingjack</groupId>
             <artifactId>common-lib</artifactId>
+            <version>1.0.0</version>
         </dependency>
 
         <dependency>
